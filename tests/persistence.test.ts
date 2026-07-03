@@ -49,4 +49,22 @@ describe('saveProgress / loadProgress', () => {
     saveProgress(storage, 1, sampleProgress);
     expect(loadProgress(storage, 2)).toBeNull();
   });
+
+  it('returns null for valid JSON that is not a progress record', () => {
+    const storage = createMockStorage();
+    storage.setItem(progressKey(3), JSON.stringify({ unrelated: true }));
+    expect(loadProgress(storage, 3)).toBeNull();
+  });
+
+  it('returns null for valid JSON with the wrong field types', () => {
+    const storage = createMockStorage();
+    storage.setItem(progressKey(4), JSON.stringify({ ...sampleProgress, reveals: 'not-an-array' }));
+    expect(loadProgress(storage, 4)).toBeNull();
+  });
+
+  it('returns null for a bare JSON array or primitive', () => {
+    const storage = createMockStorage();
+    storage.setItem(progressKey(6), JSON.stringify([1, 2, 3]));
+    expect(loadProgress(storage, 6)).toBeNull();
+  });
 });
