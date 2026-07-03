@@ -67,4 +67,13 @@ describe('saveProgress / loadProgress', () => {
     storage.setItem(progressKey(6), JSON.stringify([1, 2, 3]));
     expect(loadProgress(storage, 6)).toBeNull();
   });
+
+  it('does not throw when the underlying storage write fails', () => {
+    const storage = {
+      setItem: () => {
+        throw new DOMException('QuotaExceededError');
+      },
+    };
+    expect(() => saveProgress(storage, 5, sampleProgress)).not.toThrow();
+  });
 });

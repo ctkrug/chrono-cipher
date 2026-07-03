@@ -18,8 +18,16 @@ export function progressKey(dayNumber: number): string {
   return `${KEY_PREFIX}${dayNumber}`;
 }
 
+/**
+ * Best-effort save: swallows write failures (Safari private mode, quota
+ * exceeded, storage disabled) so a persistence hiccup never breaks gameplay.
+ */
 export function saveProgress(storage: WritableStorage, dayNumber: number, progress: StoredProgress): void {
-  storage.setItem(progressKey(dayNumber), JSON.stringify(progress));
+  try {
+    storage.setItem(progressKey(dayNumber), JSON.stringify(progress));
+  } catch {
+    // Progress just won't survive a reload this session; the game itself still works.
+  }
 }
 
 function isValidProgress(value: unknown): value is StoredProgress {
