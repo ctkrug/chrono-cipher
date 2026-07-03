@@ -142,6 +142,13 @@ function mount(root: HTMLElement): void {
   };
 
   render(root, state);
+
+  window.addEventListener('keydown', (event) => {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+    const letter = event.key.toUpperCase();
+    if (!ALPHABET.includes(letter) || letter.length !== 1) return;
+    guess(root, state, letter);
+  });
 }
 
 const root = document.getElementById('app');
