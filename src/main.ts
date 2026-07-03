@@ -98,6 +98,25 @@ function renderKeyboard(state: AppState): string {
     .join('');
 }
 
+const DUST_PARTICLE_COUNT = 18;
+
+function prefersReducedMotion(): boolean {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function renderDustField(): string {
+  if (prefersReducedMotion()) return '';
+
+  const particles = Array.from({ length: DUST_PARTICLE_COUNT }, () => {
+    const left = Math.round(Math.random() * 100);
+    const delay = Math.round(Math.random() * 500);
+    const duration = 900 + Math.round(Math.random() * 500);
+    return `<span class="win__dust" style="left: ${left}%; animation-delay: ${delay}ms; animation-duration: ${duration}ms;"></span>`;
+  }).join('');
+
+  return `<div class="win__dust-field" aria-hidden="true">${particles}</div>`;
+}
+
 function renderWinOverlay(state: AppState): string {
   if (!state.solved || state.solveTimeMs === null) return '';
 
@@ -118,6 +137,7 @@ function renderWinOverlay(state: AppState): string {
   return `
     <div class="win" role="dialog" aria-label="Puzzle solved">
       <div class="win__card">
+        ${renderDustField()}
         <div class="win__stamp" aria-hidden="true">DECRYPTED</div>
         <p class="win__quote">${typedQuote}</p>
         <p class="win__author">— ${state.puzzle.author}</p>
