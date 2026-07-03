@@ -7,6 +7,7 @@ import { applyGuess, applyHint, createGameState, isSolved, toSolveResult, type G
 import { createMuteState, type MuteState } from './mute';
 import { createSfxPlayer, type SfxPlayer } from './audio';
 import { buildEmojiGrid, formatSolveTime } from './share';
+import { loadProgress, saveProgress } from './persistence';
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -255,6 +256,18 @@ function flashLastAction(root: HTMLElement, state: AppState, cipherLetter: strin
   }, FEEDBACK_DURATION_MS);
 }
 
+/** Persists the current game/win state so a reload resumes instead of restarting. */
+function persist(state: AppState): void {
+  saveProgress(window.localStorage, state.day, {
+    mapping: state.game.mapping,
+    reveals: state.game.reveals,
+    hintsUsed: state.game.hintsUsed,
+    startedAtMs: state.startedAtMs,
+    solved: state.solved,
+    solveTimeMs: state.solveTimeMs,
+  });
+}
+
 /** Checks for the solved state after a guess/hint and triggers the win celebration once. */
 function checkWin(state: AppState): void {
   if (state.solved || !isSolved(state.game)) return;
@@ -278,6 +291,7 @@ function guess(root: HTMLElement, state: AppState, plainLetter: string | undefin
     state.sfx.playWrong();
   }
 
+  persist(state);
   render(root, state);
   flashLastAction(root, state, cipherLetter);
 }
@@ -292,6 +306,7 @@ function requestHint(root: HTMLElement, state: AppState): void {
   state.sfx.playCorrect();
   checkWin(state);
 
+  persist(state);
   render(root, state);
   flashLastAction(root, state, hint.cipherLetter);
 }
@@ -303,18 +318,21 @@ function mount(root: HTMLElement): void {
   const quote = quoteForDay(day);
   const puzzle = buildPuzzle(seed, quote);
   const mute = createMuteState(window.localStorage);
+  const stored = loadProgress(window.localStorage, day);
 
   const state: AppState = {
     puzzle,
     day,
-    game: createGameState(puzzle),
+    game: stored
+      ? { puzzle, mapping: stored.mapping, reveals: stored.reveals, hintsUsed: stored.hintsUsed }
+      : createGameState(puzzle),
     selectedCipherLetter: null,
     lastAction: null,
     sfx: createSfxPlayer(mute),
     mute,
-    startedAtMs: Date.now(),
-    solved: false,
-    solveTimeMs: null,
+    startedAtMs: stored?.startedAtMs ?? Date.now(),
+    solved: stored?.solved ?? false,
+    solveTimeMs: stored?.solveTimeMs ?? null,
   };
 
   render(root, state);
