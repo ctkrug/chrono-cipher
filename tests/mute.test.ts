@@ -22,6 +22,12 @@ describe('createMuteState', () => {
     expect(createMuteState(storage).isMuted()).toBe(true);
   });
 
+  it('treats any unrecognized stored value as unmuted', () => {
+    const storage = createMockStorage();
+    storage.setItem('chrono-cipher:muted', 'yes');
+    expect(createMuteState(storage).isMuted()).toBe(false);
+  });
+
   it('toggle flips and persists the flag', () => {
     const storage = createMockStorage();
     const mute = createMuteState(storage);
