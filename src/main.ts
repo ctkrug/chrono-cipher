@@ -4,7 +4,7 @@ import { buildPuzzle, type CipherPuzzle } from './cipher';
 import { quoteForDay } from './quotes';
 import { rankByFrequency } from './frequency';
 import { applyGuess, applyHint, createGameState, isSolved, toSolveResult, type GameState } from './game';
-import { createMuteState } from './mute';
+import { createMuteState, type MuteState } from './mute';
 import { createSfxPlayer, type SfxPlayer } from './audio';
 import { buildEmojiGrid, formatSolveTime } from './share';
 
@@ -22,6 +22,7 @@ interface AppState {
   selectedCipherLetter: string | null;
   lastAction: LastAction | null;
   sfx: SfxPlayer;
+  mute: MuteState;
   startedAtMs: number;
   solved: boolean;
   solveTimeMs: number | null;
@@ -162,8 +163,17 @@ function render(root: HTMLElement, state: AppState): void {
   root.innerHTML = `
     <main class="dossier">
       <header class="dossier__header">
-        <h1 class="dossier__wordmark">Chrono Cipher</h1>
-        <p class="dossier__tagline">Case No. ${state.day} — declassify today's quote</p>
+        <div>
+          <h1 class="dossier__wordmark">Chrono Cipher</h1>
+          <p class="dossier__tagline">Case No. ${state.day} — declassify today's quote</p>
+        </div>
+        <button
+          type="button"
+          class="dossier__mute"
+          data-action="toggle-mute"
+          aria-pressed="${state.mute.isMuted()}"
+          aria-label="${state.mute.isMuted() ? 'Unmute sound' : 'Mute sound'}"
+        >${state.mute.isMuted() ? '🔇' : '🔊'}</button>
       </header>
       <div class="dossier__body">
         <section class="dossier__document" aria-label="Encrypted quote">
@@ -211,6 +221,11 @@ function render(root: HTMLElement, state: AppState): void {
 
   root.querySelector<HTMLButtonElement>('[data-action="copy-result"]')?.addEventListener('click', () => {
     copyResult(root, state);
+  });
+
+  root.querySelector<HTMLButtonElement>('[data-action="toggle-mute"]')?.addEventListener('click', () => {
+    state.mute.toggle();
+    render(root, state);
   });
 }
 
@@ -287,6 +302,7 @@ function mount(root: HTMLElement): void {
   const seed = dailySeed(today);
   const quote = quoteForDay(day);
   const puzzle = buildPuzzle(seed, quote);
+  const mute = createMuteState(window.localStorage);
 
   const state: AppState = {
     puzzle,
@@ -294,7 +310,8 @@ function mount(root: HTMLElement): void {
     game: createGameState(puzzle),
     selectedCipherLetter: null,
     lastAction: null,
-    sfx: createSfxPlayer(createMuteState(window.localStorage)),
+    sfx: createSfxPlayer(mute),
+    mute,
     startedAtMs: Date.now(),
     solved: false,
     solveTimeMs: null,
