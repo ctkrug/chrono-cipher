@@ -238,6 +238,14 @@ button.dossier__cell:active {
   transform: translateY(1px);
 }
 
+button.dossier__cell[aria-disabled='true'] {
+  cursor: default;
+}
+
+button.dossier__cell[aria-disabled='true']:hover {
+  background: transparent;
+}
+
 .dossier__cell-plain {
   font-size: 0.95em;
   min-height: 1em;

@@ -58,6 +58,7 @@ function renderDocument(state: AppState): string {
         data-index="${index}"
         aria-label="${label}"
         aria-pressed="${char === state.selectedCipherLetter}"
+        aria-disabled="${Boolean(guessed)}"
       >
         <span class="dossier__cell-plain">${guessed ?? ''}</span>
         <span class="dossier__cell-cipher">${char}</span>
@@ -215,7 +216,7 @@ function render(root: HTMLElement, state: AppState): void {
   root.querySelectorAll<HTMLButtonElement>('[data-cipher-letter]').forEach((button) => {
     button.addEventListener('click', () => {
       const letter = button.dataset.cipherLetter;
-      if (!letter) return;
+      if (!letter || letter in state.game.mapping) return;
       state.selectedCipherLetter = state.selectedCipherLetter === letter ? null : letter;
       state.sfx.playKeyStrike();
       render(root, state);
