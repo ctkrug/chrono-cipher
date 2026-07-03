@@ -31,6 +31,18 @@ export const QUOTES: Quote[] = [
   { text: 'Genius is one percent inspiration, ninety-nine percent perspiration.', author: 'Thomas Edison' },
   { text: 'The unexamined life is not worth living.', author: 'Socrates' },
   { text: 'Veni, vidi, vici.', author: 'Julius Caesar' },
+  { text: 'I have not yet begun to fight.', author: 'John Paul Jones' },
+  { text: 'Give me your tired, your poor.', author: 'Emma Lazarus' },
+  { text: 'United we stand, divided we fall.', author: 'Aesop' },
+  { text: 'Cogito, ergo sum.', author: 'Rene Descartes' },
+  { text: 'Carpe diem.', author: 'Horace' },
+  { text: 'Float like a butterfly, sting like a bee.', author: 'Muhammad Ali' },
+  { text: 'I have a dream.', author: 'Martin Luther King Jr.' },
+  { text: 'Loose lips sink ships.', author: 'World War II slogan' },
+  { text: 'In the beginning was the Word.', author: 'Gospel of John' },
+  { text: 'Et tu, Brute?', author: 'William Shakespeare' },
+  { text: 'Fourscore and seven years ago.', author: 'Abraham Lincoln' },
+  { text: 'A penny saved is a penny earned.', author: 'Benjamin Franklin' },
 ];
 
 /** Wraps around the quote list so the daily counter never runs out of puzzles. */
