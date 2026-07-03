@@ -182,6 +182,49 @@ button.dossier__cell:active {
   color: var(--accent-support);
 }
 
+@keyframes cell-solved {
+  0% {
+    transform: perspective(300px) rotateX(90deg) scale(1);
+  }
+  60% {
+    transform: perspective(300px) rotateX(0deg) scale(1.08);
+  }
+  100% {
+    transform: perspective(300px) rotateX(0deg) scale(1);
+  }
+}
+
+@keyframes cell-wrong {
+  0%,
+  100% {
+    transform: translateX(0);
+    background-color: transparent;
+  }
+  25% {
+    transform: translateX(-4px);
+    background-color: rgba(140, 31, 31, 0.25);
+  }
+  75% {
+    transform: translateX(4px);
+    background-color: rgba(140, 31, 31, 0.25);
+  }
+}
+
+.dossier__cell--pulse {
+  animation: cell-solved 140ms ease-out;
+}
+
+.dossier__cell--shake {
+  animation: cell-wrong 90ms ease-out 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dossier__cell--pulse,
+  .dossier__cell--shake {
+    animation: none;
+  }
+}
+
 .dossier__evidence {
   background: var(--surface-2);
   border-radius: var(--radius);
