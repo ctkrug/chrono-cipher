@@ -27,6 +27,7 @@ interface AppState {
   startedAtMs: number;
   solved: boolean;
   solveTimeMs: number | null;
+  announcement: string;
 }
 
 const FEEDBACK_DURATION_MS = 200;
@@ -138,7 +139,7 @@ function renderWinOverlay(state: AppState): string {
 
   return `
     <div class="win" role="dialog" aria-label="Puzzle solved">
-      <div class="win__card">
+      <div class="win__card" tabindex="-1">
         ${renderDustField()}
         <div class="win__stamp" aria-hidden="true">DECRYPTED</div>
         <p class="win__quote">${typedQuote}</p>
@@ -176,6 +177,7 @@ function render(root: HTMLElement, state: AppState): void {
           aria-label="${state.mute.isMuted() ? 'Unmute sound' : 'Mute sound'}"
         >${state.mute.isMuted() ? '🔇' : '🔊'}</button>
       </header>
+      <p class="sr-only" role="status" aria-live="polite">${state.announcement}</p>
       <div class="dossier__body">
         <section class="dossier__document" aria-label="Encrypted quote">
           <p class="dossier__ciphertext">${renderDocument(state)}</p>
@@ -274,6 +276,7 @@ function checkWin(state: AppState): void {
   state.solved = true;
   state.solveTimeMs = Date.now() - state.startedAtMs;
   state.sfx.playStampThud();
+  state.announcement = `${state.announcement} Case declassified in ${formatSolveTime(state.solveTimeMs)}.`;
 }
 
 function guess(root: HTMLElement, state: AppState, plainLetter: string | undefined): void {
@@ -286,13 +289,16 @@ function guess(root: HTMLElement, state: AppState, plainLetter: string | undefin
   if (outcome.correct) {
     state.selectedCipherLetter = null;
     state.sfx.playCorrect();
+    state.announcement = `Correct: ${cipherLetter} is ${plainLetter}.`;
     checkWin(state);
   } else {
     state.sfx.playWrong();
+    state.announcement = `Incorrect guess for ${cipherLetter}.`;
   }
 
   persist(state);
   render(root, state);
+  focusWinCardIfSolved(root, state);
   flashLastAction(root, state, cipherLetter);
 }
 
@@ -304,11 +310,19 @@ function requestHint(root: HTMLElement, state: AppState): void {
   state.game = nextGame;
   state.lastAction = { cipherLetter: hint.cipherLetter, type: 'correct' };
   state.sfx.playCorrect();
+  state.announcement = `Hint revealed: ${hint.cipherLetter} is ${state.game.mapping[hint.cipherLetter]}.`;
   checkWin(state);
 
   persist(state);
   render(root, state);
+  focusWinCardIfSolved(root, state);
   flashLastAction(root, state, hint.cipherLetter);
+}
+
+/** Moves focus into the win card the moment it first appears, for keyboard/screen-reader users. */
+function focusWinCardIfSolved(root: HTMLElement, state: AppState): void {
+  if (!state.solved) return;
+  root.querySelector<HTMLElement>('.win__card')?.focus();
 }
 
 function mount(root: HTMLElement): void {
@@ -333,6 +347,7 @@ function mount(root: HTMLElement): void {
     startedAtMs: stored?.startedAtMs ?? Date.now(),
     solved: stored?.solved ?? false,
     solveTimeMs: stored?.solveTimeMs ?? null,
+    announcement: '',
   };
 
   render(root, state);
