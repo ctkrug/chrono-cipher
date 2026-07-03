@@ -249,6 +249,11 @@ function copyResult(root: HTMLElement, state: AppState): void {
   const grid = buildEmojiGrid(toSolveResult(state.game, state.day, state.solveTimeMs));
   const toast = root.querySelector<HTMLElement>('.win__toast');
 
+  if (!navigator.clipboard) {
+    if (toast) toast.textContent = 'Clipboard unavailable — select and copy the result manually.';
+    return;
+  }
+
   navigator.clipboard
     .writeText(grid)
     .then(() => {
