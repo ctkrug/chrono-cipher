@@ -180,7 +180,17 @@ function render(root: HTMLElement, state: AppState): void {
       <p class="sr-only" role="status" aria-live="polite">${state.announcement}</p>
       <div class="dossier__body">
         <section class="dossier__document" aria-label="Encrypted quote">
+          <div class="dossier__letterhead">
+            <span>Transcript — substitution cipher</span>
+            <span>${state.solved ? 'Status: declassified' : 'Status: in progress'}</span>
+          </div>
           <p class="dossier__ciphertext">${renderDocument(state)}</p>
+          <div class="dossier__redacted" aria-hidden="true">
+            <span class="dossier__redacted-line" style="width: 82%"></span>
+            <span class="dossier__redacted-line" style="width: 64%"></span>
+            <span class="dossier__redacted-line" style="width: 91%"></span>
+            <span class="dossier__redacted-line" style="width: 45%"></span>
+          </div>
         </section>
         <aside class="dossier__evidence" aria-label="Letter frequency evidence">
           <h2>Frequency evidence</h2>
