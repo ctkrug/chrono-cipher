@@ -35,7 +35,12 @@ whole app by rebuilding `#app`'s `innerHTML` on every state change and re-attach
   transient `lastAction` (cleared after `FEEDBACK_DURATION_MS`) that drives the pulse/shake
   CSS animations, and check `isSolved` to trigger the win celebration exactly once.
 - On mount, restores any stored progress for today's day number so a reload resumes instead of
-  restarting; a day already solved renders the win overlay directly.
+  restarting; a day already solved renders the win overlay directly and moves focus into it.
+- Because `render` replaces `#app`'s entire subtree, it would otherwise drop keyboard focus to
+  `<body>` on every re-render. `focusSelectorFor`/`restoreFocus` snapshot the focused control's
+  `data-*` identity before the rebuild and refocus its equivalent afterward (falling back to the
+  hint button if that control became disabled), so keyboard/screen-reader users never lose their
+  place mid-solve.
 
 ## Data flow
 
