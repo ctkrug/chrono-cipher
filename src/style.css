@@ -143,9 +143,15 @@ body {
   box-shadow:
     0 1px 0 var(--surface-2),
     0 6px 16px -4px rgba(43, 38, 32, 0.35);
-  min-height: 60vh;
+  min-height: 48vh;
   display: flex;
   flex-direction: column;
+}
+
+@media (min-width: 900px) {
+  .dossier__document {
+    min-height: 60vh;
+  }
 }
 
 .dossier__letterhead {

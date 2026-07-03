@@ -215,6 +215,8 @@ function render(root: HTMLElement, state: AppState): void {
             <span class="dossier__redacted-line" style="width: 64%"></span>
             <span class="dossier__redacted-line" style="width: 91%"></span>
             <span class="dossier__redacted-line" style="width: 45%"></span>
+            <span class="dossier__redacted-line" style="width: 73%"></span>
+            <span class="dossier__redacted-line" style="width: 58%"></span>
           </div>
         </section>
         <aside class="dossier__evidence" aria-label="Letter frequency evidence">
