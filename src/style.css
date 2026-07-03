@@ -277,6 +277,43 @@ button.dossier__cell:active {
   background: var(--surface-1);
 }
 
+.evidence__item--hinted .evidence__guess {
+  color: var(--accent-support);
+}
+
+.evidence__hint {
+  margin-top: var(--space-2);
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--accent-support);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--accent-support);
+  font-family: var(--font-body);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease-out,
+    color 160ms ease-out;
+}
+
+.evidence__hint:hover:not(:disabled) {
+  background: var(--accent-support);
+  color: var(--surface-1);
+}
+
+.evidence__hint:focus-visible {
+  outline: 2px solid var(--accent-support);
+  outline-offset: 2px;
+}
+
+.evidence__hint:disabled {
+  opacity: 0.5;
+  cursor: default;
+  border-color: var(--text-muted);
+  color: var(--text-muted);
+}
+
 .keyboard {
   display: flex;
   flex-wrap: wrap;
