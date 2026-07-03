@@ -38,6 +38,15 @@ describe('encode', () => {
     const decoded = encode(encoded, inverse);
     expect(decoded).toBe(plaintext);
   });
+
+  it('returns an empty string for empty input', () => {
+    expect(encode('', buildSubstitutionMap(1))).toBe('');
+  });
+
+  it('passes through text with no letters unchanged', () => {
+    const map = buildSubstitutionMap(1);
+    expect(encode('12:34 - !?', map)).toBe('12:34 - !?');
+  });
 });
 
 describe('buildPuzzle', () => {
