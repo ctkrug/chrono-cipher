@@ -3,7 +3,9 @@ import { dailySeed, dayNumber } from './daily';
 import { buildPuzzle, type CipherPuzzle } from './cipher';
 import { quoteForDay } from './quotes';
 import { rankByFrequency } from './frequency';
-import { applyGuess, createGameState, type GameState } from './game';
+import { applyGuess, applyHint, createGameState, isSolved, type GameState } from './game';
+import { createMuteState } from './mute';
+import { createSfxPlayer, type SfxPlayer } from './audio';
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -18,6 +20,7 @@ interface AppState {
   game: GameState;
   selectedCipherLetter: string | null;
   lastAction: LastAction | null;
+  sfx: SfxPlayer;
 }
 
 const FEEDBACK_DURATION_MS = 200;
@@ -61,8 +64,11 @@ function renderEvidence(state: AppState): string {
   return frequencies
     .map((entry) => {
       const guessed = state.game.mapping[entry.cipherLetter];
-      const solved = Boolean(guessed);
-      return `<li class="evidence__item${solved ? ' evidence__item--solved' : ''}">
+      const reveal = state.game.reveals.find((r) => r.cipherLetter === entry.cipherLetter);
+      const classes = ['evidence__item'];
+      if (guessed) classes.push('evidence__item--solved');
+      if (reveal?.hinted) classes.push('evidence__item--hinted');
+      return `<li class="${classes.join(' ')}">
         <span class="evidence__rank">${entry.rank}</span>
         <span class="evidence__letter">${entry.cipherLetter}</span>
         <span class="evidence__count">${entry.count}×</span>
@@ -104,6 +110,12 @@ function render(root: HTMLElement, state: AppState): void {
           <ul class="evidence__list">
             ${renderEvidence(state)}
           </ul>
+          <button
+            type="button"
+            class="evidence__hint"
+            data-action="hint"
+            ${isSolved(state.game) ? 'disabled' : ''}
+          >Request hint (${state.game.hintsUsed} used)</button>
         </aside>
       </div>
       <div class="keyboard" role="group" aria-label="Substitution keyboard">
@@ -117,6 +129,7 @@ function render(root: HTMLElement, state: AppState): void {
       const letter = button.dataset.cipherLetter;
       if (!letter) return;
       state.selectedCipherLetter = state.selectedCipherLetter === letter ? null : letter;
+      state.sfx.playKeyStrike();
       render(root, state);
     });
   });
@@ -126,6 +139,19 @@ function render(root: HTMLElement, state: AppState): void {
       guess(root, state, button.dataset.plainLetter);
     });
   });
+
+  root.querySelector<HTMLButtonElement>('[data-action="hint"]')?.addEventListener('click', () => {
+    requestHint(root, state);
+  });
+}
+
+function flashLastAction(root: HTMLElement, state: AppState, cipherLetter: string): void {
+  window.setTimeout(() => {
+    if (state.lastAction?.cipherLetter === cipherLetter) {
+      state.lastAction = null;
+      render(root, state);
+    }
+  }, FEEDBACK_DURATION_MS);
 }
 
 function guess(root: HTMLElement, state: AppState, plainLetter: string | undefined): void {
@@ -135,15 +161,27 @@ function guess(root: HTMLElement, state: AppState, plainLetter: string | undefin
   const outcome = applyGuess(state.game, cipherLetter, plainLetter);
   state.game = outcome.state;
   state.lastAction = { cipherLetter, type: outcome.correct ? 'correct' : 'wrong' };
-  if (outcome.correct) state.selectedCipherLetter = null;
+  if (outcome.correct) {
+    state.selectedCipherLetter = null;
+    state.sfx.playCorrect();
+  } else {
+    state.sfx.playWrong();
+  }
 
   render(root, state);
-  window.setTimeout(() => {
-    if (state.lastAction?.cipherLetter === cipherLetter) {
-      state.lastAction = null;
-      render(root, state);
-    }
-  }, FEEDBACK_DURATION_MS);
+  flashLastAction(root, state, cipherLetter);
+}
+
+function requestHint(root: HTMLElement, state: AppState): void {
+  const { state: nextGame, hint } = applyHint(state.game);
+  if (!hint) return;
+
+  state.game = nextGame;
+  state.lastAction = { cipherLetter: hint.cipherLetter, type: 'correct' };
+  state.sfx.playCorrect();
+
+  render(root, state);
+  flashLastAction(root, state, hint.cipherLetter);
 }
 
 function mount(root: HTMLElement): void {
@@ -159,6 +197,7 @@ function mount(root: HTMLElement): void {
     game: createGameState(puzzle),
     selectedCipherLetter: null,
     lastAction: null,
+    sfx: createSfxPlayer(createMuteState(window.localStorage)),
   };
 
   render(root, state);
