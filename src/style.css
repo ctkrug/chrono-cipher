@@ -56,11 +56,45 @@ body {
 
 .dossier__header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
   border-bottom: 2px solid var(--text);
   padding-bottom: var(--space-2);
+}
+
+.dossier__mute {
+  flex: 0 0 auto;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--text-muted);
+  border-radius: 50%;
+  background: var(--surface-1);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease-out,
+    border-color 160ms ease-out,
+    transform 160ms ease-out;
+}
+
+.dossier__mute:hover {
+  border-color: var(--accent);
+}
+
+.dossier__mute:focus-visible {
+  outline: 2px solid var(--accent-support);
+  outline-offset: 2px;
+}
+
+.dossier__mute:active {
+  transform: translateY(1px);
+}
+
+.dossier__mute[aria-pressed='true'] {
+  background: var(--surface-2);
+  border-color: var(--danger);
 }
 
 .dossier__wordmark {
