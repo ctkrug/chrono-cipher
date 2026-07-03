@@ -92,11 +92,13 @@ function renderKeyboard(state: AppState): string {
       const used = Object.values(state.game.mapping).includes(letter);
       const classes = ['keyboard__key'];
       if (used) classes.push('keyboard__key--used');
+      const label = used ? `Plaintext letter ${letter}, already assigned` : `Guess plaintext letter ${letter}`;
       return `<button
         type="button"
         class="${classes.join(' ')}"
         data-plain-letter="${letter}"
-        aria-label="Guess plaintext letter ${letter}"
+        aria-label="${label}"
+        ${used ? 'disabled' : ''}
       >${letter}</button>`;
     })
     .join('');
@@ -297,6 +299,7 @@ function checkWin(state: AppState): void {
 
 function guess(root: HTMLElement, state: AppState, plainLetter: string | undefined): void {
   if (!plainLetter || !state.selectedCipherLetter || state.solved) return;
+  if (Object.values(state.game.mapping).includes(plainLetter)) return;
 
   const cipherLetter = state.selectedCipherLetter;
   const outcome = applyGuess(state.game, cipherLetter, plainLetter);

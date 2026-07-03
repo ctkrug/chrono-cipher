@@ -507,6 +507,15 @@ button.dossier__cell[aria-disabled='true']:hover {
   background: var(--surface-2);
 }
 
+.keyboard__key:disabled {
+  cursor: default;
+}
+
+.keyboard__key:disabled:hover {
+  background: var(--surface-2);
+  border-color: var(--success);
+}
+
 .win {
   position: fixed;
   inset: 0;
