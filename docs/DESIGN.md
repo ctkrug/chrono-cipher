@@ -18,7 +18,7 @@ factory's portfolio from converging on yet another dark theme.
 | `--surface-1` | `#eadfc4` | document card background |
 | `--surface-2` | `#ddcfa8` | recessed/evidence panel background |
 | `--text` | `#2b2620` | primary ink |
-| `--text-muted` | `#6b5f4f` | captions, metadata, case numbers |
+| `--text-muted` | `#5f5344` | captions, metadata, case numbers |
 | `--accent` | `#a13d2b` | stamp red — primary actions, the "DECRYPTED" stamp |
 | `--accent-support` | `#2f4858` | navy ink — secondary actions, links, focus rings |
 | `--success` | `#3f6b3f` | correct letter feedback |
