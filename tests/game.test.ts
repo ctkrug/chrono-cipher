@@ -35,6 +35,14 @@ describe('applyGuess', () => {
     expect(outcome.correct).toBe(true);
     expect(outcome.state.reveals).toHaveLength(1);
   });
+
+  it('rejects a different guess for an already-solved cipher letter without changing state', () => {
+    const solved = applyGuess(createGameState(puzzle), cipherA, plainA).state;
+    const wrongLetter = plainA === 'Z' ? 'Y' : 'Z';
+    const outcome = applyGuess(solved, cipherA, wrongLetter);
+    expect(outcome.correct).toBe(false);
+    expect(outcome.state).toBe(solved);
+  });
 });
 
 describe('applyHint', () => {
