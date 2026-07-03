@@ -164,7 +164,29 @@ function renderWinOverlay(state: AppState): string {
   `;
 }
 
+/** Identifies the currently focused control by its data-attribute, if it's inside root. */
+function focusSelectorFor(active: Element | null, root: HTMLElement): string | null {
+  if (!(active instanceof HTMLElement) || !root.contains(active)) return null;
+  if (active.dataset.cipherLetter) return `[data-cipher-letter="${active.dataset.cipherLetter}"]`;
+  if (active.dataset.plainLetter) return `[data-plain-letter="${active.dataset.plainLetter}"]`;
+  if (active.dataset.action) return `[data-action="${active.dataset.action}"]`;
+  return null;
+}
+
+/** Re-focuses the equivalent control after a re-render, falling back to the hint button. */
+function restoreFocus(root: HTMLElement, selector: string | null): void {
+  if (!selector) return;
+  const target = root.querySelector<HTMLElement>(selector);
+  if (target && !target.hasAttribute('disabled')) {
+    target.focus();
+  } else {
+    root.querySelector<HTMLElement>('[data-action="hint"]')?.focus();
+  }
+}
+
 function render(root: HTMLElement, state: AppState): void {
+  const focusSelector = focusSelectorFor(document.activeElement, root);
+
   root.innerHTML = `
     <main class="dossier">
       <header class="dossier__header">
@@ -243,6 +265,8 @@ function render(root: HTMLElement, state: AppState): void {
     state.mute.toggle();
     render(root, state);
   });
+
+  restoreFocus(root, focusSelector);
 }
 
 /** Copies the spoiler-free emoji-grid share result and shows a brief confirmation. */
