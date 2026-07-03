@@ -1,0 +1,22 @@
+{
+  "name": "chrono-cipher",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A daily substitution-cipher puzzle hiding a short historical quote, with a frequency-analysis hint engine and shareable emoji results.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "eslint": "^9.9.0",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.2.0",
+    "vite": "^6.4.3",
+    "vitest": "^3.2.6"
+  }
+}
