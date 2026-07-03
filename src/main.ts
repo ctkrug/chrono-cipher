@@ -3,7 +3,9 @@ import { dailySeed, dayNumber } from './daily';
 import { buildPuzzle, type CipherPuzzle } from './cipher';
 import { quoteForDay } from './quotes';
 import { rankByFrequency } from './frequency';
-import { createGameState, type GameState } from './game';
+import { applyGuess, createGameState, type GameState } from './game';
+
+const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 interface AppState {
   puzzle: CipherPuzzle;
@@ -59,6 +61,22 @@ function renderEvidence(state: AppState): string {
     .join('');
 }
 
+function renderKeyboard(state: AppState): string {
+  return ALPHABET.split('')
+    .map((letter) => {
+      const used = Object.values(state.game.mapping).includes(letter);
+      const classes = ['keyboard__key'];
+      if (used) classes.push('keyboard__key--used');
+      return `<button
+        type="button"
+        class="${classes.join(' ')}"
+        data-plain-letter="${letter}"
+        aria-label="Guess plaintext letter ${letter}"
+      >${letter}</button>`;
+    })
+    .join('');
+}
+
 function render(root: HTMLElement, state: AppState): void {
   root.innerHTML = `
     <main class="dossier">
@@ -77,6 +95,9 @@ function render(root: HTMLElement, state: AppState): void {
           </ul>
         </aside>
       </div>
+      <div class="keyboard" role="group" aria-label="Substitution keyboard">
+        ${renderKeyboard(state)}
+      </div>
     </main>
   `;
 
@@ -88,6 +109,22 @@ function render(root: HTMLElement, state: AppState): void {
       render(root, state);
     });
   });
+
+  root.querySelectorAll<HTMLButtonElement>('[data-plain-letter]').forEach((button) => {
+    button.addEventListener('click', () => {
+      guess(root, state, button.dataset.plainLetter);
+    });
+  });
+}
+
+function guess(root: HTMLElement, state: AppState, plainLetter: string | undefined): void {
+  if (!plainLetter || !state.selectedCipherLetter) return;
+
+  const outcome = applyGuess(state.game, state.selectedCipherLetter, plainLetter);
+  state.game = outcome.state;
+  if (outcome.correct) state.selectedCipherLetter = null;
+
+  render(root, state);
 }
 
 function mount(root: HTMLElement): void {
