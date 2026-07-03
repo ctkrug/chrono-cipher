@@ -13,6 +13,14 @@ describe('formatSolveTime', () => {
   it('floors partial seconds', () => {
     expect(formatSolveTime(1_999)).toBe('0:01');
   });
+
+  it('formats zero as 0:00', () => {
+    expect(formatSolveTime(0)).toBe('0:00');
+  });
+
+  it('keeps counting minutes past the one-hour mark', () => {
+    expect(formatSolveTime(3_661_000)).toBe('61:01');
+  });
 });
 
 describe('buildEmojiGrid', () => {
@@ -46,5 +54,26 @@ describe('buildEmojiGrid', () => {
       guesses: [true, false, true],
     });
     expect(grid).toMatch(/^Chrono Cipher #1 — 0:00\n(?:🟩|🟨)+\nno hints used$/u);
+  });
+
+  it('wraps the grid onto multiple rows of 6 squares', () => {
+    const grid = buildEmojiGrid({
+      dayNumber: 3,
+      solveTimeMs: 0,
+      hintsUsed: 0,
+      guesses: [true, true, true, true, true, true, true, false],
+    });
+    const rows = grid.split('\n').slice(1, -1);
+    expect(rows).toEqual(['🟩🟩🟩🟩🟩🟩', '🟩🟨']);
+  });
+
+  it('pluralizes the hint count', () => {
+    const grid = buildEmojiGrid({ dayNumber: 1, solveTimeMs: 0, hintsUsed: 3, guesses: [false] });
+    expect(grid).toContain('3 hints used');
+  });
+
+  it('omits the grid body entirely when there are no reveals', () => {
+    const grid = buildEmojiGrid({ dayNumber: 1, solveTimeMs: 0, hintsUsed: 0, guesses: [] });
+    expect(grid).toBe('Chrono Cipher #1 — 0:00\n\nno hints used');
   });
 });
