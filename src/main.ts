@@ -396,6 +396,7 @@ function mount(root: HTMLElement): void {
   };
 
   render(root, state);
+  focusWinCardIfSolved(root, state);
 
   window.addEventListener('keydown', (event) => {
     if (event.metaKey || event.ctrlKey || event.altKey) return;
