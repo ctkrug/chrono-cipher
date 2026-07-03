@@ -69,6 +69,11 @@ describe('isSolved', () => {
     }
     expect(isSolved(state)).toBe(true);
   });
+
+  it('is vacuously true for a ciphertext with no letters', () => {
+    const punctuationOnlyPuzzle = buildPuzzle(11, { text: '. . . !', author: 'Nobody' });
+    expect(isSolved(createGameState(punctuationOnlyPuzzle))).toBe(true);
+  });
 });
 
 describe('toSolveResult', () => {
