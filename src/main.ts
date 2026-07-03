@@ -6,6 +6,7 @@ import { rankByFrequency } from './frequency';
 import { applyGuess, applyHint, createGameState, isSolved, type GameState } from './game';
 import { createMuteState } from './mute';
 import { createSfxPlayer, type SfxPlayer } from './audio';
+import { formatSolveTime } from './share';
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -21,6 +22,9 @@ interface AppState {
   selectedCipherLetter: string | null;
   lastAction: LastAction | null;
   sfx: SfxPlayer;
+  startedAtMs: number;
+  solved: boolean;
+  solveTimeMs: number | null;
 }
 
 const FEEDBACK_DURATION_MS = 200;
@@ -94,6 +98,46 @@ function renderKeyboard(state: AppState): string {
     .join('');
 }
 
+function renderWinOverlay(state: AppState): string {
+  if (!state.solved || state.solveTimeMs === null) return '';
+
+  const words = state.puzzle.plaintext.split(' ');
+  const typedQuote = words
+    .map(
+      (word, wordIndex) =>
+        `<span class="win__word">${word
+          .split('')
+          .map(
+            (letter, letterIndex) =>
+              `<span class="win__letter" style="animation-delay: ${(wordIndex * 6 + letterIndex) * 35}ms">${letter}</span>`,
+          )
+          .join('')}</span>`,
+    )
+    .join(' ');
+
+  return `
+    <div class="win" role="dialog" aria-label="Puzzle solved">
+      <div class="win__card">
+        <div class="win__stamp" aria-hidden="true">DECRYPTED</div>
+        <p class="win__quote">${typedQuote}</p>
+        <p class="win__author">— ${state.puzzle.author}</p>
+        <dl class="win__stats">
+          <div class="win__stat">
+            <dt>Solve time</dt>
+            <dd>${formatSolveTime(state.solveTimeMs)}</dd>
+          </div>
+          <div class="win__stat">
+            <dt>Hints used</dt>
+            <dd>${state.game.hintsUsed}</dd>
+          </div>
+        </dl>
+        <button type="button" class="win__copy" data-action="copy-result">Copy result</button>
+        <p class="win__toast" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  `;
+}
+
 function render(root: HTMLElement, state: AppState): void {
   root.innerHTML = `
     <main class="dossier">
@@ -121,6 +165,7 @@ function render(root: HTMLElement, state: AppState): void {
       <div class="keyboard" role="group" aria-label="Substitution keyboard">
         ${renderKeyboard(state)}
       </div>
+      ${renderWinOverlay(state)}
     </main>
   `;
 
@@ -154,8 +199,16 @@ function flashLastAction(root: HTMLElement, state: AppState, cipherLetter: strin
   }, FEEDBACK_DURATION_MS);
 }
 
+/** Checks for the solved state after a guess/hint and triggers the win celebration once. */
+function checkWin(state: AppState): void {
+  if (state.solved || !isSolved(state.game)) return;
+  state.solved = true;
+  state.solveTimeMs = Date.now() - state.startedAtMs;
+  state.sfx.playStampThud();
+}
+
 function guess(root: HTMLElement, state: AppState, plainLetter: string | undefined): void {
-  if (!plainLetter || !state.selectedCipherLetter) return;
+  if (!plainLetter || !state.selectedCipherLetter || state.solved) return;
 
   const cipherLetter = state.selectedCipherLetter;
   const outcome = applyGuess(state.game, cipherLetter, plainLetter);
@@ -164,6 +217,7 @@ function guess(root: HTMLElement, state: AppState, plainLetter: string | undefin
   if (outcome.correct) {
     state.selectedCipherLetter = null;
     state.sfx.playCorrect();
+    checkWin(state);
   } else {
     state.sfx.playWrong();
   }
@@ -173,12 +227,14 @@ function guess(root: HTMLElement, state: AppState, plainLetter: string | undefin
 }
 
 function requestHint(root: HTMLElement, state: AppState): void {
+  if (state.solved) return;
   const { state: nextGame, hint } = applyHint(state.game);
   if (!hint) return;
 
   state.game = nextGame;
   state.lastAction = { cipherLetter: hint.cipherLetter, type: 'correct' };
   state.sfx.playCorrect();
+  checkWin(state);
 
   render(root, state);
   flashLastAction(root, state, hint.cipherLetter);
@@ -198,6 +254,9 @@ function mount(root: HTMLElement): void {
     selectedCipherLetter: null,
     lastAction: null,
     sfx: createSfxPlayer(createMuteState(window.localStorage)),
+    startedAtMs: Date.now(),
+    solved: false,
+    solveTimeMs: null,
   };
 
   render(root, state);
