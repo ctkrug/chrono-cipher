@@ -19,6 +19,17 @@ describe('buildSubstitutionMap', () => {
   it('is deterministic for the same seed', () => {
     expect(buildSubstitutionMap(99)).toEqual(buildSubstitutionMap(99));
   });
+
+  it('is a derangement and a bijection across a wide range of seeds', () => {
+    for (let seed = 0; seed < 500; seed++) {
+      const map = buildSubstitutionMap(seed);
+      expect(Object.keys(map)).toHaveLength(26);
+      expect(new Set(Object.values(map)).size).toBe(26);
+      for (const [cipherLetter, plainLetter] of Object.entries(map)) {
+        expect(cipherLetter).not.toBe(plainLetter);
+      }
+    }
+  });
 });
 
 describe('encode', () => {
