@@ -3,24 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chrono Cipher — crack today's quote</title>
+    <title>Chrono Cipher — Decode history, one cipher a day</title>
     <link rel="icon" type="image/svg+xml" href="./public/favicon.svg" />
     <meta
       name="description"
-      content="A daily substitution-cipher puzzle hiding a short historical quote. Crack it with frequency analysis, then share your solve time."
+      content="A daily substitution-cipher puzzle. Crack the code hiding a famous historical quote using frequency analysis, then share your solve time. No login, new puzzle daily."
     />
     <meta name="theme-color" content="#f4ecd8" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Chrono Cipher — crack today's quote" />
+    <meta property="og:title" content="Chrono Cipher — Decode history, one cipher a day" />
     <meta
       property="og:description"
-      content="A daily substitution-cipher puzzle hiding a short historical quote. Crack it with frequency analysis, then share your solve time."
+      content="A daily substitution-cipher puzzle. Crack the code hiding a famous historical quote, then share your solve time. No login, new puzzle daily."
     />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Chrono Cipher — crack today's quote" />
+    <meta name="twitter:title" content="Chrono Cipher — Decode history, one cipher a day" />
     <meta
       name="twitter:description"
-      content="A daily substitution-cipher puzzle hiding a short historical quote. Crack it with frequency analysis, then share your solve time."
+      content="A daily substitution-cipher puzzle. Crack the code hiding a famous historical quote, then share your solve time. No login, new puzzle daily."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -32,6 +32,79 @@
   </head>
   <body>
     <div id="app"></div>
+
+    <section class="about" aria-labelledby="about-heading">
+      <div class="about__inner">
+        <h2 id="about-heading" class="about__title">About Chrono Cipher</h2>
+        <p>
+          Chrono Cipher is a daily puzzle for people who like a morning brain teaser but have
+          run out of word games to try. Each day it hides a short, famous quote behind a
+          substitution cipher: every letter of the original has been swapped for a different one,
+          and your job is to work out the swaps and read the quote underneath. The same puzzle
+          goes out to everyone on the same calendar day, so you can compare solve times with
+          friends.
+        </p>
+
+        <h3 class="about__subtitle">How to play</h3>
+        <p>
+          Pick a symbol in the coded message, then choose the plaintext letter you think it
+          stands for. Guess right and every copy of that symbol flips over across the whole
+          document at once, the way solving a real cipher works. Guess wrong and the cell shakes,
+          so you try another letter. Start with the symbols that show up most: in English, E, T,
+          and A do most of the work, so the most common symbol is usually one of them. The
+          frequency panel ranks every symbol by how often it appears, and the "Request hint"
+          button hands you the most useful next letter when you are stuck. Each hint shows up as
+          a yellow square in your shareable result instead of a green one, so leaning on it has a
+          small, visible cost.
+        </p>
+        <p>
+          Crack the last letter and the file gets stamped DECRYPTED: the quote types itself out
+          with its author and your solve time, and you can copy a spoiler-free emoji grid to
+          share.
+        </p>
+
+        <h3 class="about__subtitle">FAQ</h3>
+        <dl class="about__faq">
+          <dt>Is there a new puzzle every day?</dt>
+          <dd>
+            Yes. A fresh quote and a new cipher unlock each calendar day, seeded from the date so
+            every player gets the same puzzle.
+          </dd>
+          <dt>Do I need an account?</dt>
+          <dd>
+            No. There is no login, no server, and no tracking. Your progress is saved in your own
+            browser, so you can close the tab and come back to the same puzzle.
+          </dd>
+          <dt>What kind of quotes are used?</dt>
+          <dd>
+            Short, well-known lines from history: speeches, mottos, and famous one-liners, each
+            shown with who said it once you solve it.
+          </dd>
+          <dt>I'm stuck. What should I try?</dt>
+          <dd>
+            Look for one and two-letter words first (A, I, IT, IS, TO), and use the frequency
+            panel to test the most common symbol as E or T. Still stuck? Spend a hint.
+          </dd>
+          <dt>Can I play on my phone?</dt>
+          <dd>
+            Yes. The keyboard docks to the bottom of the screen and every tap target is sized for
+            thumbs.
+          </dd>
+        </dl>
+
+        <p class="about__cta">
+          <a class="about__button" href="https://github.com/ctkrug/chrono-cipher">View source on GitHub</a>
+        </p>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p>
+        Chrono Cipher — <a href="https://github.com/ctkrug/chrono-cipher">GitHub</a> ·
+        More by Charlie Krug → <a href="https://apps.charliekrug.com">apps.charliekrug.com</a>
+      </p>
+    </footer>
+
     <script type="module" src="./src/main.ts"></script>
   </body>
 </html>
