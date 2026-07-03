@@ -14,6 +14,15 @@ describe('rankByFrequency', () => {
     expect(ranked[0].count).toBe(3);
     expect(ranked[0].rank).toBe(1);
   });
+
+  it('breaks ties by first appearance in the ciphertext', () => {
+    const ranked = rankByFrequency('ZZBBAA');
+    expect(ranked.map((r) => r.cipherLetter)).toEqual(['Z', 'B', 'A']);
+  });
+
+  it('returns an empty ranking for a ciphertext with no letters', () => {
+    expect(rankByFrequency('123 - !?')).toEqual([]);
+  });
 });
 
 describe('nextHint', () => {
