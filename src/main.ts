@@ -3,10 +3,10 @@ import { dailySeed, dayNumber } from './daily';
 import { buildPuzzle, type CipherPuzzle } from './cipher';
 import { quoteForDay } from './quotes';
 import { rankByFrequency } from './frequency';
-import { applyGuess, applyHint, createGameState, isSolved, type GameState } from './game';
+import { applyGuess, applyHint, createGameState, isSolved, toSolveResult, type GameState } from './game';
 import { createMuteState } from './mute';
 import { createSfxPlayer, type SfxPlayer } from './audio';
-import { formatSolveTime } from './share';
+import { buildEmojiGrid, formatSolveTime } from './share';
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -188,6 +188,27 @@ function render(root: HTMLElement, state: AppState): void {
   root.querySelector<HTMLButtonElement>('[data-action="hint"]')?.addEventListener('click', () => {
     requestHint(root, state);
   });
+
+  root.querySelector<HTMLButtonElement>('[data-action="copy-result"]')?.addEventListener('click', () => {
+    copyResult(root, state);
+  });
+}
+
+/** Copies the spoiler-free emoji-grid share result and shows a brief confirmation. */
+function copyResult(root: HTMLElement, state: AppState): void {
+  if (state.solveTimeMs === null) return;
+
+  const grid = buildEmojiGrid(toSolveResult(state.game, state.day, state.solveTimeMs));
+  const toast = root.querySelector<HTMLElement>('.win__toast');
+
+  navigator.clipboard
+    .writeText(grid)
+    .then(() => {
+      if (toast) toast.textContent = 'Copied to clipboard!';
+    })
+    .catch(() => {
+      if (toast) toast.textContent = 'Could not copy — select and copy the result manually.';
+    });
 }
 
 function flashLastAction(root: HTMLElement, state: AppState, cipherLetter: string): void {
