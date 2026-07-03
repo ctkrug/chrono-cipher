@@ -47,10 +47,10 @@ design, [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the code map, and
 
 ```sh
 npm install
-npm run dev      # local dev server
-npm run build    # type-check + production build to dist/
-npm test         # run the unit test suite
-npm run lint      # lint the codebase
+npm run dev    # local dev server
+npm run build  # type-check + production build to dist/
+npm test       # run the unit test suite
+npm run lint   # lint the codebase
 ```
 
 ## License
