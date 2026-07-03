@@ -103,12 +103,83 @@ body {
 }
 
 .dossier__ciphertext {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
   font-family: var(--font-display);
   font-size: clamp(1.1rem, 2.4vw, 1.6rem);
   line-height: 1.8;
   letter-spacing: 0.06em;
   margin: 0;
-  word-break: break-word;
+  row-gap: var(--space-2);
+}
+
+.dossier__cell {
+  display: inline-flex;
+}
+
+.dossier__cell--static {
+  align-items: flex-end;
+  padding-bottom: 6px;
+  color: var(--text-muted);
+}
+
+button.dossier__cell {
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 1.1em;
+  min-height: 44px;
+  padding: 4px 3px;
+  border: none;
+  border-bottom: 2px solid var(--text-muted);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease-out,
+    border-color 160ms ease-out,
+    transform 160ms ease-out;
+}
+
+button.dossier__cell:hover {
+  background: rgba(161, 61, 43, 0.08);
+}
+
+button.dossier__cell:focus-visible {
+  outline: 2px solid var(--accent-support);
+  outline-offset: 2px;
+}
+
+button.dossier__cell:active {
+  transform: translateY(1px);
+}
+
+.dossier__cell-plain {
+  font-size: 0.95em;
+  min-height: 1em;
+  color: var(--accent);
+}
+
+.dossier__cell-cipher {
+  font-size: 0.62em;
+  color: var(--text-muted);
+}
+
+.dossier__cell--selected {
+  border-bottom-color: var(--accent);
+  background: rgba(161, 61, 43, 0.12);
+}
+
+.dossier__cell--solved .dossier__cell-cipher {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.dossier__cell--hinted .dossier__cell-plain {
+  color: var(--accent-support);
 }
 
 .dossier__evidence {
@@ -125,7 +196,7 @@ body {
   margin: 0 0 var(--space-2);
 }
 
-.dossier__evidence ul {
+.evidence__list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -133,4 +204,32 @@ body {
   flex-direction: column;
   gap: var(--space-1);
   font-family: var(--font-display);
+}
+
+.evidence__item {
+  display: grid;
+  grid-template-columns: 1.5em 1.5em 1fr 1.5em;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px 6px;
+  border-radius: var(--radius);
+}
+
+.evidence__rank {
+  color: var(--text-muted);
+  font-size: 0.8em;
+}
+
+.evidence__count {
+  color: var(--text-muted);
+  font-size: 0.8em;
+}
+
+.evidence__guess {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.evidence__item--solved {
+  background: var(--surface-1);
 }
