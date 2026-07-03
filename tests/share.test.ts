@@ -45,6 +45,6 @@ describe('buildEmojiGrid', () => {
       hintsUsed: 0,
       guesses: [true, false, true],
     });
-    expect(grid).toMatch(/^Chrono Cipher #1 — 0:00\n[🟩🟨]+\nno hints used$/);
+    expect(grid).toMatch(/^Chrono Cipher #1 — 0:00\n(?:🟩|🟨)+\nno hints used$/u);
   });
 });
