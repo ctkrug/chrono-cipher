@@ -21,8 +21,8 @@ Each day, a short historical quote is enciphered with a monoalphabetic substitut
 seeded deterministically from the calendar date so every player worldwide gets the identical
 puzzle. The player solves it by proposing a mapping from cipher letters to plaintext letters;
 every guess updates every matching cell in the document at once (classic substitution-cipher
-solving, not letter-by-letter Wordle guessing). A frequency-analysis engine — real letter-
-frequency statistics, not a scripted hint list — can be asked for the single most useful next
+solving, not letter-by-letter Wordle guessing). A frequency-analysis engine — the ciphertext's
+own letter distribution, not a scripted hint list — can be asked for the single most useful next
 reveal at any time, at the cost of counting against the share grid.
 
 ## Key design decisions
@@ -30,10 +30,10 @@ reveal at any time, at the cost of counting against the share grid.
 - **Deterministic, serverless daily puzzles.** The date is the only shared state; no accounts,
   no backend, no database. `dayNumber()` + a seeded PRNG (`mulberry32`) reproduce the exact same
   substitution map for everyone on a given UTC day. This keeps the whole game a static site.
-- **The hint engine is real cryptanalysis, not flavor text.** `rankByFrequency` /
-  `nextHint` operate on the actual ciphertext's letter distribution against standard English
-  frequencies — the same first move a human would make with pencil and paper. This is the
-  project's actual point of craft, not a side feature.
+- **The hint engine is real cryptanalysis, not flavor text.** `rankByFrequency` / `nextHint`
+  reveal the highest observed-frequency unsolved cipher letter — the same first move a human
+  would make with pencil and paper, since English text is dominated by a handful of letters
+  (E, T, A). This is the project's actual point of craft, not a side feature.
 - **A derangement constraint on the cipher.** The substitution map is rerolled until no letter
   maps to itself, so the puzzle never accidentally hands out a free correct letter.
 - **Spoiler-free sharing.** The emoji-grid result (`buildEmojiGrid`) encodes only solve time and
