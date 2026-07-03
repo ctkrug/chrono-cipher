@@ -15,16 +15,18 @@ built around a genuinely different mechanic — classical cryptanalysis — and 
 system as a small puzzle-design problem in its own right: which letter should the game reveal
 next, and why, given only frequency statistics?
 
-## Planned features
+## Features
 
 - **Daily puzzle** — deterministic, date-seeded substitution cipher over a rotating set of
-  short historical quotes (with attribution).
+  short historical quotes (with attribution), solved via an on-screen or physical keyboard.
 - **Frequency-analysis hint engine** — ranks ciphertext letters by observed frequency against
-  standard English letter frequencies and suggests the next most-informative reveal.
+  standard English letter frequencies and reveals the next most-informative letter on request.
 - **Emoji-grid sharing** — a Wordle-style shareable result grid encoding solve time and hints
-  used, with no spoilers.
+  used, copied to the clipboard with one click, with no spoilers.
 - **A "declassified dossier" presentation** — the puzzle reads like a redacted intelligence
-  file; solving it stamps the document "DECRYPTED."
+  file; solving it stamps the document "DECRYPTED" with a paper-dust flourish and synth SFX.
+- **Resumable progress** — mid-solve state and already-solved days persist to `localStorage`,
+  so a reload never loses progress.
 
 ## Stack
 
@@ -36,7 +38,9 @@ next, and why, given only frequency statistics?
 
 ## Status
 
-Early scaffold — see [`docs/VISION.md`](docs/VISION.md) for the full design and
+Core gameplay is functionally complete: interactive solving, frequency hints, the win flow
+with sharing, and per-day persistence. See [`docs/VISION.md`](docs/VISION.md) for the full
+design, [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the code map, and
 [`docs/BACKLOG.md`](docs/BACKLOG.md) for the build plan.
 
 ## Development
