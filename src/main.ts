@@ -7,12 +7,20 @@ import { applyGuess, createGameState, type GameState } from './game';
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
+interface LastAction {
+  cipherLetter: string;
+  type: 'correct' | 'wrong';
+}
+
 interface AppState {
   puzzle: CipherPuzzle;
   day: number;
   game: GameState;
   selectedCipherLetter: string | null;
+  lastAction: LastAction | null;
 }
+
+const FEEDBACK_DURATION_MS = 200;
 
 function renderDocument(state: AppState): string {
   return state.puzzle.ciphertext
@@ -28,6 +36,9 @@ function renderDocument(state: AppState): string {
       if (guessed) classes.push('dossier__cell--solved');
       if (reveal?.hinted) classes.push('dossier__cell--hinted');
       if (char === state.selectedCipherLetter) classes.push('dossier__cell--selected');
+      if (state.lastAction?.cipherLetter === char) {
+        classes.push(state.lastAction.type === 'correct' ? 'dossier__cell--pulse' : 'dossier__cell--shake');
+      }
 
       const label = guessed ? `Cipher letter ${char}, guessed ${guessed}` : `Cipher letter ${char}, unsolved`;
       return `<button
@@ -120,11 +131,19 @@ function render(root: HTMLElement, state: AppState): void {
 function guess(root: HTMLElement, state: AppState, plainLetter: string | undefined): void {
   if (!plainLetter || !state.selectedCipherLetter) return;
 
-  const outcome = applyGuess(state.game, state.selectedCipherLetter, plainLetter);
+  const cipherLetter = state.selectedCipherLetter;
+  const outcome = applyGuess(state.game, cipherLetter, plainLetter);
   state.game = outcome.state;
+  state.lastAction = { cipherLetter, type: outcome.correct ? 'correct' : 'wrong' };
   if (outcome.correct) state.selectedCipherLetter = null;
 
   render(root, state);
+  window.setTimeout(() => {
+    if (state.lastAction?.cipherLetter === cipherLetter) {
+      state.lastAction = null;
+      render(root, state);
+    }
+  }, FEEDBACK_DURATION_MS);
 }
 
 function mount(root: HTMLElement): void {
@@ -139,6 +158,7 @@ function mount(root: HTMLElement): void {
     day,
     game: createGameState(puzzle),
     selectedCipherLetter: null,
+    lastAction: null,
   };
 
   render(root, state);
